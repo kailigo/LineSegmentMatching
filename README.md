@@ -1,8 +1,8 @@
 
-# Hierarchical line matching based on Line--Junction--Line structure descriptor and local homography estimation
+# Hierarchical line matching based on Line-Junction-Line structure descriptor and local homography estimation
 
 <p align="center">
-  <img width="640" height="240" src="https://github.com/kailigo/LineSegmentMatching/tree/master/data/result.jpg" width="640"/>
+  <img width="640" height="240" src="https://github.com/kailigo/LineSegmentMatching/tree/master/data/result.jpg" width="320"/>
 </p>
 
 
