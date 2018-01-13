@@ -48,33 +48,7 @@ void CMatOperation::any(Mat src, bool *pSign)
 	}	
 }
 
-void CMatOperation::diffSet(vector<float> v1, vector<float> v2, vector<float> &vout, vector<int> &keepIdx)
-{
-	int cols1 = v1.size();
-	int cols2 = v2.size();	
-	vout = v1;
-	int num = 0;
-	for (int i = 0; i < cols1; i++)
-	{
-		bool flag = 1;
-		float val1 = v1[i];
-		for(int j = 0; j < cols2; j++)
-		{
-			float val2 = v2[j];
-			if (val1 == val2)
-			{
-				vout.erase(vout.begin()+(i-num));
-				num++;
-				flag = 0;
-				break;
-			}
-		}
-		if (flag)
-		{
-			keepIdx.push_back(i);
-		}
-	}	
-}
+
 
 void CMatOperation::intersectSet(vector<int> v1, vector<int> v2, vector<int> &vout, vector<int> &keepIdx)
 {
@@ -246,6 +220,37 @@ Mat CMatOperation::genContinuousMat(int _floor, int _ceil, int step)
 	return outMat.t();
 }
 
+
+
+void CMatOperation::diffSet(vector<float> v1, vector<float> v2, vector<float> &vout, vector<int> &keepIdx)
+{
+	int cols1 = v1.size();
+	int cols2 = v2.size();	
+	vout = v1;
+	int num = 0;
+	for (int i = 0; i < cols1; i++)
+	{
+		bool flag = 1;
+		float val1 = v1[i];
+		for(int j = 0; j < cols2; j++)
+		{
+			float val2 = v2[j];
+			if (val1 == val2)
+			{
+				vout.erase(vout.begin()+(i-num));
+				num++;
+				flag = 0;
+				break;
+			}
+		}
+		if (flag)
+		{
+			keepIdx.push_back(i);
+		}
+	}	
+}
+
+
 void CMatOperation::diffSet(Mat src1, Mat src2, Mat &dst, Mat &keptIdx)
 {
 	int cols1 = src1.cols;
@@ -275,6 +280,40 @@ void CMatOperation::diffSet(Mat src1, Mat src2, Mat &dst, Mat &keptIdx)
 	keptIdx = keptIdx.t();
 	dst = dst.t();
 }
+
+void CMatOperation::diffSet(Mat src1, Mat src2, Mat &dst)
+{
+	int cols1 = src1.cols;
+	int cols2 = src2.cols;		
+	int num = 0;
+	int *pdat1 = src1.ptr<int>(0);
+	int *pdat2 = src2.ptr<int>(0);
+	for (int i = 0; i < cols1; i++)
+	{
+		bool flag = 1;
+		int val1 = pdat1[i];
+		for(int j = 0; j < cols2; j++)
+		{
+			int val2 = pdat2[j];
+			if (val1 == val2)
+			{				
+				flag = 0;
+				break;
+			}
+		}
+		if (flag)
+		{
+			// keptIdx.push_back(i);
+			dst.push_back(val1);
+		}
+	}	
+	// keptIdx = keptIdx.t();
+	dst = dst.t();
+}
+
+
+
+
 
 void CMatOperation::eraseRows(Mat src, Mat eRows, Mat dst)
 {

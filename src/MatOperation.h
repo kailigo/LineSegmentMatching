@@ -24,8 +24,12 @@ public:
 	void sortrows(Mat inMat, Mat &outMat, Mat &sortedComIdx, int primiaryKey, int secondaryKey);
 	void uniqueVector(vector<int> inVect, vector<int> &outVect, vector<int> &keepIdx);
 	void uniqueVector(Mat inVect, Mat &outMat, Mat &keepIdx);
-	void diffSet(vector<float> v1, vector<float> v2, vector<float> &vout, vector<int> &keepIdx);	
-	void diffSet(Mat src1, Mat src2, Mat &dst, Mat &keptIdx = Mat());	
+
+	void diffSet(vector<float> v1, vector<float> v2, vector<float> &vout, vector<int> &keepIdx);		
+	void diffSet(Mat src1, Mat src2, Mat &dst, Mat &keptIdx);		
+	void diffSet(Mat src1, Mat src2, Mat &dst);	
+
+
 	Mat genContinuousMat(int _floor, int _ceil, int step = 1);	
 	void eraseRow(Mat src, int n, Mat &dst);
 	void eraseRows(Mat src, Mat eRows, Mat dst);

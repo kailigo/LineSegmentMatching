@@ -98,10 +98,17 @@ private:
 	void intensityDirection(Mat img,  strLine* strline, int nline);
 	void buildGaussianPyramid(  Mat& base, vector<Mat>& pyr, int nOctaves, int nOctaveLayers, float downsampleRatio);
 	void calcGrad(Mat img, Mat &gMag, Mat &gDir);
-	void description(vector<strFanSection> &strFanSect,  Mat gMag,  Mat gDir, bool isOutputDesMat = false, Mat &desMat = Mat());
+
+	void description(vector<strFanSection> &strFanSect,  Mat gMag,  Mat gDir, bool isOutputDesMat, Mat& desMat);
+	void description(vector<strFanSection> &strFanSect,  Mat gMag,  Mat gDir);
+
+	void description_fans(vector<strFanSection> &vstrFanSection,  Mat gMag,  Mat gDir, bool isOutputDesMat, Mat& desMat);
+	void description_fans(vector<strFanSection> &vstrFanSection,  Mat gMag,  Mat gDir);
+
+
 	void description(Mat pts,  Mat gMag,  Mat gDir, Mat &descriptors);
-	void description_fanPts(Mat pts,  Mat gMag,  Mat gDir, Mat &descriptors);
-	void description_fans(vector<strFanSection> &vstrFanSection,  Mat gMag,  Mat gDir, bool isOutputDesMat = false, Mat &desMat = Mat());
+	
+	void description_fanPts(Mat pts,  Mat gMag,  Mat gDir, Mat &descriptors);	
 	void description_singleFan(Vec4f pt,  Mat gMag,  Mat gDir, Mat &des);
 	void describeSingleLine(Vec3f pt,  Mat gMag,  Mat gDir, Mat &des);	
 	void description_sift(vector<strFanSection> &vstrFanSection,  Mat gMag,  Mat gDir);
@@ -114,7 +121,11 @@ private:
 	void drawEpipolarline(Mat image1, Mat image2,vector<Point2f> pointSet1,vector<Point2f> pointSet2,Mat_<double> Fmatrix);
 	void plotLineMatches(Mat img1, Mat img2, vector<strLineMatch> vStrLineMatch, string imgName);
 	void sortrows(Mat inMat, Mat &outMat, Mat &sortedComIdx, int primiaryKey, int secondaryKey);
-	void uniqueChk(Mat inMat, Vec3i regulation, vector<int> &vKeptIdx, Mat &outMat = Mat());
+
+	void uniqueChk(Mat inMat, Vec3i regulation, vector<int> &vKeptIdx, Mat &outMat);
+	void uniqueChk(Mat inMat, Vec3i regulation, vector<int> &vKeptIdx);
+
+
 	int   descriptorsMatching(Mat pts1, Mat pts2, Mat des1, Mat des2, float distThr, vector<strFanMatch> &vFanMatch);
 	void updatePointMatchFromFanMatches();
 	bool isAcceptedToBePointMatch(Vec3f pt1, Vec3f pt2, float desDistThr, float fDistThr, float &desDist);
@@ -127,14 +138,14 @@ private:
 	float distPt2Line(Point2f pt, Mat_<float> pline);
 	void  addFansMatch(float desDistThr, float fDistThr);
 	void  groupFans(vector<strFanSection> vMatchedFans, vector<strFanSection> vUnmatchedFans,  int nEnterCluster, 
-							vector<vector<vector<int>>>  &vGroupedUnjunc);
+							vector< vector<vector<int> > >  &vGroupedUnjunc);
 	bool isConsistentWithFMat(Point2f pt1, Point2f pt2, Mat FMat, float FDistThr);
 	bool isConsistentWithNeighborPointMatches(strFanSection strFan1, strFanSection strFan2, Mat pointMatch);
 	void matchSingleLines(float desDistThr, float fDistThr);
 	void updatePointMatchFromSingleLineMatch(vector<strFanMatch> vStrFanMatch, vector<strLineMatch> vStrLineMatch,  Mat FMat, vector<strPointMatch> &vPointMatches);
 	void nearestMatchedPointsToLine(vector<strLine> vUnmatchedLines, Mat matchedPoints, int nNearestMatchedPts, Mat &nearestPts);
 	void adjustLineMatchEndpoints(vector<strLineMatch> vStrLineMatch);
-	void groupSingleLines(vector<strLine> vUnmatchedLines, vector<strFanSection> vMatchedFans, int nEnterGroup, vector<vector<vector<int>>> &vEnteredSingleLines);
+	void groupSingleLines(vector<strLine> vUnmatchedLines, vector<strFanSection> vMatchedFans, int nEnterGroup, vector< vector< vector<int> > > &vEnteredSingleLines);
 	void bifurcateFans(vector<strFanSection> vStrFan1, vector<strFanSection> vStrFan2, vector<strFanMatch> vStrFanMatch, 
 		vector<strFanSection> &vMatchedFans1, vector<strFanSection> &vMatchedFans2, vector<strFanSection> &vUnmatchedFans1, vector<strFanSection> &vUnmatchedFans2);
 	void bifurcateLines(strLine* vStrLine1, strLine* vStrLine2, vector<strLineMatch> vStrLineMatch, vector<strLine> &vMatchedLines1, vector<strLine> &vMatchedLines2, vector<strLine> &vUnmatchedLines1, vector<strLine> &vUnmatchedLines2);

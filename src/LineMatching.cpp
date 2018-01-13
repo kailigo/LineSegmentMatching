@@ -130,7 +130,9 @@ CLineMatching::CLineMatching(Mat img1,  Mat line1, Mat tnode1, Mat img2,  Mat li
 		pdat[2] = vstrFanMatch[i].dist;
 	}	
 	vector<int> vKeptIdx;
+
 	uniqueChk(tmat, regulation, vKeptIdx);	
+
 	int nKeptIdx = vKeptIdx.size();
 	vector<strFanMatch>	  tvstrFanMatch;
 	vector<strPointMatch> tvstrPointMatch;
@@ -209,8 +211,11 @@ CLineMatching::CLineMatching(Mat img1,  Mat line1, Mat tnode1, Mat img2,  Mat li
 		if (nitr > 3 || curNum <= preNum)		
 			break;		
 
+		// waitKey();
+
 		preNum = curNum;	
  		addFansMatch(desDistThr, fDistThr);
+
 		cout<<"LJL matches after propagation: " << vstrFanMatch.size()<<endl;
  		updatePointMatchFromFanMatches();		
 		//cout<<"point matches after expanding: " << vstrPointMatch.size()<<endl;
@@ -270,9 +275,12 @@ CLineMatching::CLineMatching(Mat img1,  Mat line1, Mat tnode1, Mat img2,  Mat li
 
 	lineMatches2Mat(mlines);
 	if (isVerbose) plotPointMatches(colorImg1.clone(), colorImg2.clone(), vstrPointMatch, "Final point matches");
-	if (isVerbose) 
+	if (isVerbose)
+	{ 
 		plotLineMatches(colorImg1.clone(), colorImg2.clone(), vstrLineMatch, "Final line matches");	
-	//waitKey();
+		waitKey();
+	}
+	// 
 };
 
 void CLineMatching::descriptorEvaluationUniquePtMatches()
@@ -618,7 +626,7 @@ void CLineMatching::matchSingleLines_homography(float homDistThr)
 	vpointMatch2Mat(vstrPointMatch, pointMatches);
 	vector<strFanSection> vMatchedFans1, vMatchedFans2, vUnmatchedFans1, vUnmatchedFans2;
 	bifurcateFans(vstrFanSection1, vstrFanSection2, vstrFanMatch, vMatchedFans1, vMatchedFans2, vUnmatchedFans1, vUnmatchedFans2);
-	vector<vector<vector<int>>> vEnteredSingleLines1, vEnteredSingleLines2;
+	vector<vector<vector<int> > > vEnteredSingleLines1, vEnteredSingleLines2;
 	groupSingleLines(vUnmatchedLines1, vMatchedFans1, nEnterGroups, vEnteredSingleLines1);
 	groupSingleLines(vUnmatchedLines2, vMatchedFans2, nEnterGroups, vEnteredSingleLines2);
 	vector<strFanMatch> vNewFanMatch;
@@ -1050,7 +1058,7 @@ void CLineMatching::matchSingleLines(float desDistThr, float fDistThr)
 
 	vector<strFanSection> vMatchedFans1, vMatchedFans2, vUnmatchedFans1, vUnmatchedFans2;
 	bifurcateFans(vstrFanSection1, vstrFanSection2, vstrFanMatch, vMatchedFans1, vMatchedFans2, vUnmatchedFans1, vUnmatchedFans2);
-	vector<vector<vector<int>>> vEnteredSingleLines1, vEnteredSingleLines2;
+	vector<vector<vector<int> > > vEnteredSingleLines1, vEnteredSingleLines2;
 	groupSingleLines(vUnmatchedLines1, vMatchedFans1, nEnterGroups, vEnteredSingleLines1);
 	groupSingleLines(vUnmatchedLines2, vMatchedFans2, nEnterGroups, vEnteredSingleLines2);
 	vector<strFanMatch> vNewFanMatch;
@@ -1440,7 +1448,7 @@ float CLineMatching::estimateLocalRotateAngle(strFanSection strFan1, strFanSecti
 }
 
 void CLineMatching::groupSingleLines(vector<strLine> vUnmatchedLines, vector<strFanSection> vMatchedFans, 
-	int nEnterGroups, vector<vector<vector<int>>> &vEnteredSingleLines)
+	int nEnterGroups, vector<vector<vector<int> > > &vEnteredSingleLines)
 {
 	Mat matchedJunctions, nearestJunctions;			
 	int nMatchedFans = vMatchedFans.size();
@@ -1453,7 +1461,7 @@ void CLineMatching::groupSingleLines(vector<strLine> vUnmatchedLines, vector<str
 	}
 	nearestMatchedPointsToLine(vUnmatchedLines, matchedJunctions, nEnterGroups, nearestJunctions);
 	int nunLines = vUnmatchedLines.size();
-	vector<vector<int>> vGroup(nMatchedFans);
+	vector<vector<int> > vGroup(nMatchedFans);
 
 	for (int i = 0; i < nunLines; i++)
 	{
@@ -1581,8 +1589,10 @@ void CLineMatching::bifurcateFans(vector<strFanSection> vStrFan1, vector<strFanS
 	Mat fullSer1 = genContinuousMat(0, vstrFanSection1.size());
 	Mat fullSer2 = genContinuousMat(0, vstrFanSection2.size());
 	Mat unmatchedSer1, unmatchedSer2;
+
 	pMatOperation->diffSet(fullSer1, matchSerial1, unmatchedSer1);	
 	pMatOperation->diffSet(fullSer2, matchSerial2, unmatchedSer2);
+
 
 	int cols1 = unmatchedSer1.cols;	
 	int* pdat1 = unmatchedSer1.ptr<int>(0);
@@ -1741,14 +1751,18 @@ void CLineMatching::addFansMatch(float desDistThr, float fDistThr)
 	int nEnterCluster = 4;	
 	int nNearPts = 8;
 	Mat pointMatches;
+
 	vpointMatch2Mat(vstrPointMatch, pointMatches);	
 	
 	vector<strFanSection> vMatchedFans1, vMatchedFans2, vUnmatchedFans1, vUnmatchedFans2;
+
 	bifurcateFans(vstrFanSection1, vstrFanSection2, vstrFanMatch, vMatchedFans1, vMatchedFans2, vUnmatchedFans1, vUnmatchedFans2);
 
-	vector<vector<vector<int>>>  vGroupedUnFans1, vGroupedUnFans2;
+	vector<vector<vector<int> > >  vGroupedUnFans1, vGroupedUnFans2;
 	groupFans(vMatchedFans1, vUnmatchedFans1, nEnterCluster, vGroupedUnFans1);
 	groupFans(vMatchedFans2, vUnmatchedFans2, nEnterCluster, vGroupedUnFans2);
+
+
 	Mat nearestMPts1, nearestMPts2;
 	nearestMatchedPtsToFan(vUnmatchedFans1, pointMatches.colRange(0, 2), nNearPts, nearestMPts1);
 	nearestMatchedPtsToFan(vUnmatchedFans2, pointMatches.colRange(2, 4), nNearPts, nearestMPts2);
@@ -1827,6 +1841,9 @@ void CLineMatching::addFansMatch(float desDistThr, float fDistThr)
 
 	uniqueFanMatch(tvstrFanMatch);
 
+
+	cout<<"tvstrFanMatch:" <<tvstrFanMatch.size();
+
 	int nNewFanMatch = tvstrFanMatch.size();
 	for (int i = 0; i < nNewFanMatch; i++)	
 		vstrFanMatch.push_back(tvstrFanMatch[i]);		
@@ -1881,11 +1898,11 @@ bool CLineMatching::isCurPairFanConsistentWithNearMPts(strFanSection strFan1, st
 }
 
 void CLineMatching::groupFans(vector<strFanSection> vMatchedFans, vector<strFanSection> vUnmatchedFans,  int nEnterCluster, 
-												  vector<vector<vector<int>>>  &vGroupedUnjunc)
+												  vector<vector<vector<int> > >  &vGroupedUnjunc)
 {
 	int nunFans = vUnmatchedFans.size();
 	int nMatchedFans = vMatchedFans.size();
-	vector<vector<int>>   vEnteredunFans(nMatchedFans);	
+	vector<vector<int> >   vEnteredunFans(nMatchedFans);	
 	Mat enteringFans;
 
 	for (int i = 0; i < nunFans; i++)
@@ -2377,6 +2394,51 @@ void CLineMatching::uniqueChk(Mat inMat, Vec3i regulation, vector<int> &vkeptIdx
 {
 	Mat tmat1, tmat2;
 	Mat sortedIdx;
+	sortrows(inMat, tmat1, sortedIdx, regulation[0], regulation[2]);
+	sortedIdx = sortedIdx.t();
+	int rows = inMat.rows;
+	Mat toutMat;
+	vector<int> vkeptIdx1;
+	tmat2 = tmat1.col(regulation[0]).t();
+	float *pcol = tmat2.ptr<float>(0);		
+	int *pIdx = sortedIdx.ptr<int>(0);		
+	vkeptIdx1.push_back(pIdx[0]);
+	toutMat.push_back(tmat1.row(0).clone());		
+	for (int i = 1; i < rows; i++)
+	{			
+		if (pcol[i] != pcol[i-1])
+		{
+			vkeptIdx1.push_back(pIdx[i]);		
+			toutMat.push_back(tmat1.row(i).clone());
+		}
+	}
+
+	tmat1.release();
+	sortrows(toutMat, tmat1, sortedIdx, regulation[1], regulation[2]);	
+	sortedIdx = sortedIdx.t();
+	rows = toutMat.rows;
+	tmat2 = tmat1.col(regulation[1]).t();
+	pcol = tmat2.ptr<float>(0);				
+	pIdx = sortedIdx.ptr<int>(0);
+	int curIdx = pIdx[0];
+	vkeptIdx.push_back(vkeptIdx1.at(curIdx));		
+	outMat.push_back(tmat1.row(0).clone());
+	for (int i = 1; i < rows; i++)
+	{			
+		if (pcol[i] != pcol[i-1])
+		{
+			curIdx = pIdx[i];
+			vkeptIdx.push_back(vkeptIdx1.at(curIdx));		
+			outMat.push_back(tmat1.row(i).clone());
+		}
+	}
+}
+
+
+void CLineMatching::uniqueChk(Mat inMat, Vec3i regulation, vector<int> &vkeptIdx)
+{
+	Mat tmat1, tmat2;
+	Mat sortedIdx;
 //	cout<<inMat<<endl;
 	sortrows(inMat, tmat1, sortedIdx, regulation[0], regulation[2]);
 	sortedIdx = sortedIdx.t();
@@ -2429,17 +2491,19 @@ void CLineMatching::uniqueChk(Mat inMat, Vec3i regulation, vector<int> &vkeptIdx
 		pIdx = sortedIdx.ptr<int>(0);
 		int curIdx = pIdx[0];
 		vkeptIdx.push_back(vkeptIdx1.at(curIdx));		
-		outMat.push_back(tmat1.row(0).clone());
+		// outMat.push_back(tmat1.row(0).clone());
 		for (int i = 1; i < rows; i++)
 		{			
 			if (pcol[i] != pcol[i-1])
 			{
 				curIdx = pIdx[i];
 				vkeptIdx.push_back(vkeptIdx1.at(curIdx));		
-				outMat.push_back(tmat1.row(i).clone());
+				// outMat.push_back(tmat1.row(i).clone());
 			}
 		}
 }
+
+
 
 void CLineMatching::sortrows(Mat inMat, Mat &outMat, Mat &sortedComIdx, int primiaryKey, int secondaryKey)
 {
@@ -3216,7 +3280,7 @@ float CLineMatching::descriptorDistance(Mat des1, Mat des2, int ncand)
 int CLineMatching::descriptorsMatching(Mat pts1, Mat pts2, Mat des1, Mat des2, float distThr, vector<strFanMatch> &vFanMatch)
 {
 	FlannBasedMatcher matcher;  	
-	vector<vector<DMatch>> m_knnMatches;  	
+	vector<vector<DMatch> > m_knnMatches;  	
 	matcher.knnMatch(des1, des2, m_knnMatches, 1);  
 	Mat tpts1, tpts2;
 	int nmatch = m_knnMatches.size();
@@ -3289,7 +3353,30 @@ void CLineMatching::fanMatch(vector<strFanSection> v1, vector<strFanSection> v2,
 	}	
 }
 
-void CLineMatching::description(vector<strFanSection> &vstrFanSection,  Mat gMag,  Mat gDir, bool isOutputDesMat, Mat &desMat)
+void CLineMatching::description(vector<strFanSection> &vstrFanSection,  Mat gMag,  Mat gDir)
+{
+	Mat mDes; 
+	// desMat.release();
+	int nfan = vstrFanSection.size();
+	for (int i = 0; i < nfan; i++)
+	{
+		mDes.release();
+		float angs[2] = { vstrFanSection[i].strbranch1.ang, vstrFanSection[i].strbranch2.ang };
+		Vec3f pt;
+		pt[0] = vstrFanSection[i].intsection.x;
+		pt[1] = vstrFanSection[i].intsection.y;
+		for (int j = 0; j < 2; j++)
+		{									
+			pt[2] = angs[j];
+			Mat des;
+			describeSingleLine(pt, gMag, gDir, des);
+			mDes.push_back(des.clone());					
+		}
+		vstrFanSection[i].mDes = mDes.reshape(1, 1).clone();				
+	}
+}
+
+void CLineMatching::description(vector<strFanSection> &vstrFanSection,  Mat gMag,  Mat gDir, bool isOutputDesMat, Mat & desMat)
 {
 	Mat mDes; 
 	desMat.release();
@@ -3437,59 +3524,6 @@ void CLineMatching::description_singleFan(Vec4f pt,  Mat gMag,  Mat gDir, Mat &d
 					}			
 				}	
 			}
-	//		}							
-			/*
-			if (pt[2] > 1.5*CV_PI && pt[3] < 0.5 * CV_PI)
-			{
-			if (dang > 0)
-			{	
-			flag = 1;
-			}
-			else
-			{
-			dang += CV_PI;
-			}
-			}
-			if (flag != 1)
-			{
-			if (dang > 0 )
-			{
-			if (dang < difAng)
-			{
-			flag = 1;
-			}
-			else if(dang < CV_PI)
-			{
-			flag = 2;
-			}
-			else if(dang < difAng + CV_PI)
-			{
-			flag = 3;
-			}
-			else
-			{
-			flag = 4;
-			}
-			}
-			else if (dang < 0)
-			{
-			dang = -dang;
-			difAng = fmod(difAng+CV_PI, 2*CV_PI);
-			if (dang < CV_PI - difAng)
-			{
-			flag = 2;
-			}
-			else if (dang < CV_PI)
-			{
-			flag = 3;
-			}
-			else
-			{
-			flag = 4;
-			}
-			}
-			}	
-			*/
 		 }		
 	}
 
@@ -3577,9 +3611,6 @@ void CLineMatching::description_fans(vector<strFanSection> &vstrFanSection,  Mat
 		Vec4f pt(curFan.intsection.x, curFan.intsection.y, curFan.strbranch1.ang, curFan.strbranch2.ang);
 		Mat mDes;
 		description_singleFan(pt, gMag, gDir, mDes);		
-		//Vec3f pt1(curFan.intsection.x, curFan.intsection.y, curFan.strbranch1.ang);
-		//description_sift_single(pt1, gMag, gDir, mDes);
-
 		vstrFanSection[i].mDes = mDes;			
 	}
 
@@ -3590,34 +3621,32 @@ void CLineMatching::description_fans(vector<strFanSection> &vstrFanSection,  Mat
 			desMat.push_back(vstrFanSection[i].mDes);
 		}		
 	}
-
-//	cout<<desMat.row(0)<<endl;
-	/*
-
-	desMat.release();
-	int nfan = vstrFanSection.size();
-	for (int i = 0; i < nfan; i++)
-	{
-		mDes.release();
-		float angs[2] = { vstrFanSection[i].strbranch1.ang, vstrFanSection[i].strbranch2.ang };
-		Vec3f pt;
-		pt[0] = vstrFanSection[i].intsection.x;
-		pt[1] = vstrFanSection[i].intsection.y;
-		for (int j = 0; j < 2; j++)
-		{									
-			pt[2] = angs[j];
-			Mat des;
-			describeSingleLine(pt, gMag, gDir, des);
-			mDes.push_back(des.clone());					
-		}
-		vstrFanSection[i].mDes = mDes.reshape(1, 1).clone();		
-		if (isOutputDesMat)
-		{
-			desMat.push_back(mDes.reshape(1, 1).clone());
-		}
-	}
-	*/
 }
+
+
+
+void CLineMatching::description_fans(vector<strFanSection> &vstrFanSection,  Mat gMag,  Mat gDir)
+{
+	// desMat.release(); 
+	int nfan = vstrFanSection.size();
+
+	for(int i = 0; i < nfan; i++)
+	{
+		strFanSection curFan = vstrFanSection[i];
+		Vec4f pt(curFan.intsection.x, curFan.intsection.y, curFan.strbranch1.ang, curFan.strbranch2.ang);
+		Mat mDes;
+		description_singleFan(pt, gMag, gDir, mDes);		
+		vstrFanSection[i].mDes = mDes;			
+	}
+	// if (isOutputDesMat)
+	// {
+	// 	for (int i = 0; i < nfan; i++)
+	// 	{
+	// 		desMat.push_back(vstrFanSection[i].mDes);
+	// 	}		
+	// }
+}
+
 
 
 void CLineMatching::description_sift(vector<strFanSection> &vstrFanSection,  Mat gMag,  Mat gDir)
