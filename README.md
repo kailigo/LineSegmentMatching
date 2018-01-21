@@ -27,11 +27,13 @@ The code is based on the following two papers. Please cite them if you find the 
 
 ## Dependecy
 
-The code is based on OpenCV , and you need CMake to build a project from the code.
+The code is based on OpenCV (2.*), and you need CMake to build a project from the code. The code has been tested in both Windows and Linux.
+Should you meet any problem in compiling the code, feel free the contact with Kai Li (li.kai.gml@gmail.com)
 
 ## Demo
 
 ./LSM ./data/1.jpg ./data/2.jpg
+
 
 
 
